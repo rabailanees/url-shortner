@@ -25,7 +25,7 @@ def redirect_to_url(short_code):
             print(f"✅ Incremented accessCount for {short_code}")
     except Exception as e:
         print(f"🔥 Error incrementing accessCount: {str(e)}")
-    
+
     # 3. Redirect with anti-cache headers
     response = redirect(url['originalUrl'], code=301)
     response.headers['Cache-Control'] = 'no-store, max-age=0'
