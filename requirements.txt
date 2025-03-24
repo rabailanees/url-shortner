@@ -1,0 +1,4 @@
+Flask==2.0.3
+Werkzeug==2.0.3  # Explicitly specify this version
+pymongo==4.1.1
+python-dotenv==0.19.2
