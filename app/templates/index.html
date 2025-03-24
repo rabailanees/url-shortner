@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>URL Shortener</title>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      flex: 1;
+      padding: 8px;
+    }
+
+    button {
+      padding: 8px 20px;
+    }
+
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>URL Shortener</h1>
+  <form id="shortenForm">
+    <input type="url" id="urlInput" placeholder="Enter long URL" required>
+    <button type="submit">Shorten</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('shortenForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const urlInput = document.getElementById('urlInput');
+      const resultDiv = document.getElementById('result');
+
+      try {
+        // Shorten URL
+        const shortenRes = await fetch('/api/shorten', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: urlInput.value })
+        });
+        const shortenData = await shortenRes.json();
+        if (!shortenRes.ok) throw new Error(shortenData.error);
+
+        // Display initial data
+        resultDiv.innerHTML = `
+                  <p>Short URL: <a href="/${shortenData.shortCode}" target="_blank">
+                      ${window.location.host}/${shortenData.shortCode}
+                  </a></p>
+                  <p>Access count: <span id="accessCount">0</span></p>
+                  <button onclick="refreshStats('${shortenData.shortCode}')">Refresh Count</button>
+              `;
+
+        // Auto-refresh every 2 seconds
+        const intervalId = setInterval(() => {
+          refreshStats(shortenData.shortCode);
+        }, 2000);
+
+        // Cleanup when new form is submitted
+        urlInput.addEventListener('input', () => {
+          clearInterval(intervalId);
+          resultDiv.innerHTML = '';
+        });
+
+        urlInput.value = '';
+
+      } catch (error) {
+        resultDiv.textContent = `Error: ${error.message}`;
+      }
+    });
+
+    async function refreshStats(shortCode) {
+      try {
+        const statsRes = await fetch(`/api/shorten/${shortCode}/stats`);
+        const statsData = await statsRes.json();
+        document.getElementById('accessCount').textContent = statsData.accessCount;
+      } catch (error) {
+        console.error('Refresh failed:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>
