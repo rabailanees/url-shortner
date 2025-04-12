@@ -1,10 +1,9 @@
-# rabail-innovaxel-anees
 # URL Shortener Service
 
 ## Setup Instructions
 
 1. Clone the repository:  
-   `git clone https://github.com/rabailanees/rabail-innovaxel-anees.git`  
+   `git clone https://github.com/rabailanees/url-shortner.git`  
 2. Switch to the `dev` branch:  
    `git checkout dev`  
 3. Install dependencies:  
